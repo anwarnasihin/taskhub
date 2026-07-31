@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProjectController; // Pastikan baris ini ada
+use App\Http\Controllers\{ProjectController, TaskController};
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AttachmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,8 +18,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // CUKUP PASTIKAN BARIS RESOURCE INI YANG AKTIF 👇
+    // CRUD Project
     Route::resource('projects', ProjectController::class);
+
+    // Nested resource -- task selalu di dalam project (Kecuali index & show)
+    Route::resource('projects.tasks', TaskController::class)
+         ->except(['index', 'show']);
+
+    // Route toggle (Fitur 5 nanti)
+    Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggle'])
+         ->name('tasks.toggle');
+
+    Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])
+     ->name('attachments.destroy');
 });
 
 require __DIR__.'/auth.php';
