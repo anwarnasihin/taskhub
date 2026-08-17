@@ -1,47 +1,65 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login TaskHub</title>
+</head>
+<body style="background-color: #F6F8FA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    {{-- Logo T --}}
+    <div style="margin-bottom: 24px;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg,#FF6B4A,#FF8F73); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+            T
+        </div>
+    </div>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    {{-- Box Login Style GitHub --}}
+    <div style="width: 100%; max-width: 308px;">
+        <h1 style="font-size: 24px; font-weight: 300; text-align: center; margin-bottom: 16px; color: #1F2328; margin-top: 0;">Login TaskHub</h1>
+
+        <div style="background-color: #ffffff; border: 1px solid #D0D7DE; border-radius: 6px; padding: 16px;">
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                {{-- Email atau Username --}}
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 14px; font-weight: 500; color: #1F2328; margin-bottom: 8px;">
+                        Email/Username
+                    </label>
+                    <input type="text" name="name" required autofocus placeholder="Masukkan email atau username"
+                        style="width: 100%; padding: 5px 12px; font-size: 14px; line-height: 20px; color: #1F2328; background-color: #ffffff; border: 1px solid #D0D7DE; border-radius: 6px; outline: none; box-sizing: border-box;">
+                </div>
+
+                {{-- Password --}}
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 14px; font-weight: 500; color: #1F2328;">Password</label>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" style="font-size: 12px; color: #0969DA; text-decoration: none;">Lupa password?</a>
+                        @endif
+                    </div>
+                    <input type="password" name="password" required
+                           style="width: 100%; padding: 5px 12px; font-size: 14px; line-height: 20px; color: #1F2328; background-color: #ffffff; border: 1px solid #D0D7DE; border-radius: 6px; outline: none; box-sizing: border-box;">
+                </div>
+
+                {{-- Tombol Sign in --}}
+                <button type="submit"
+                        style="width: 100%; padding: 5px 16px; font-size: 14px; font-weight: 500; line-height: 20px; color: #ffffff; background-color: #1F883D; border: 1px solid rgba(27,31,36,0.15); border-radius: 6px; cursor: pointer; text-align: center;">
+                    Sign in
+                </button>
+            </form>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        {{-- Footer Card --}}
+        <div style="margin-top: 16px; border: 1px solid #D0D7DE; border-radius: 6px; padding: 16px; text-align: center; font-size: 14px; color: #1F2328; background-color: #ffffff;">
+            Belum punya akun? <a href="{{ route('register') }}" style="color: #0969DA; text-decoration: none;">Daftar sekarang</a>
         </div>
+    </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+    <footer style="margin-top: 32px; font-size: 12px; color: #57606A;">
+        © {{ date('Y') }} TaskHub
+    </footer>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</body>
+</html>

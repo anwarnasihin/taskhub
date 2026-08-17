@@ -39,7 +39,7 @@ class TaskController extends Controller
             'priority'      => 'required|in:low,medium,high',
             'due_date'      => 'nullable|date|after_or_equal:today',
             'attachments'   => 'nullable|array',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         ]);
 
         $task = $project->tasks()->create([
@@ -85,41 +85,38 @@ class TaskController extends Controller
     }
 
     public function update(Request $request, Project $project, Task $task)
-{
-    abort_if($task->user_id !== auth()->id(), 403);
+    {
+        abort_if($task->user_id !== auth()->id(), 403);
 
-    $validated = $request->validate([
-        'title'         => 'required|string|min:3|max:255',
-        'description'   => 'nullable|string',
-        'priority'      => 'required|in:low,medium,high',
-        'due_date'      => 'nullable|date',
-        'attachments'   => 'nullable|array',
-        'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-    ]);
+        // 1. Validasi Input
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'due_date'      => 'nullable|date', // Ini akan memperbarui tanggal, otomatis menghilangkan status terlambat jika tanggalnya masa depan
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+        ]);
 
-    $task->update([
-        'title'       => $validated['title'],
-        'description' => $validated['description'] ?? null,
-        'priority'    => $validated['priority'],
-        'due_date'    => $validated['due_date'] ?? null,
-    ]);
+        // 2. Update Data Dasar
+        $task->update([
+            'title'    => $validated['title'],
+            'due_date' => $validated['due_date'] ?? $task->due_date,
+        ]);
 
-    // Logic Loop Upload Lampiran saat Edit
-    if ($request->hasFile('attachments')) {
-        foreach ($request->file('attachments') as $file) {
-            $path = $file->store('attachments', 'public');
-            $task->attachments()->create([
-                'file_path'     => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type'     => $file->getMimeType(),
-                'file_size'     => $file->getSize(),
-            ]);
+        // 3. Proses Upload File (Menambah file baru)
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments', 'public');
+                $task->attachments()->create([
+                    'file_path'     => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type'     => $file->getMimeType(),
+                    'file_size'     => $file->getSize(),
+                ]);
+            }
         }
-    }
 
-    return redirect()->route('projects.show', $project)
-        ->with('success', 'Tugas berhasil diperbarui!');
-}
+        return redirect()->route('projects.show', $project)
+            ->with('success', 'Tugas berhasil diperbarui!');
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -144,4 +141,31 @@ class TaskController extends Controller
 
         return back()->with('success', $msg);
     }
-}
+
+    public function downloadAttachment($id)
+    {
+        // Sesuaikan App\Models\TaskAttachment dengan nama model yang ada di folder app/Models/
+        $attachment = \App\Models\TaskAttachment::findOrFail($id);
+
+        $path = storage_path('app/public/' . $attachment->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($path, $attachment->original_name);
+    }
+
+    public function previewAttachment($id)
+    {
+        $attachment = \App\Models\TaskAttachment::findOrFail($id);
+        $path = storage_path('app/public/' . $attachment->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        // Menampilkan file langsung di browser (inline) alih-alih mendownloadnya
+        return response()->file($path);
+    }
+    }

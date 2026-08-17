@@ -5,8 +5,9 @@ use App\Http\Controllers\{ProjectController, TaskController};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttachmentController;
 
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -31,6 +32,12 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])
      ->name('attachments.destroy');
+
+     Route::get('/projects/{project}/pdf', [App\Http\Controllers\ProjectController::class, 'exportPdf'])->name('projects.pdf');
+     Route::get('/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->name('attachments.download');
+     Route::get('/attachments/{attachment}/preview', [App\Http\Controllers\TaskController::class, 'previewAttachment'])->name('attachments.preview');
+
+     Route::get('/dashboard', [ProjectController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';

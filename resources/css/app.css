@@ -1,4 +1,13 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
 /* resources/css/app.css */
 /* Ganti seluruh isi file dengan hanya 1 baris ini: */
 @import "tailwindcss";
 /* Selesai — tidak perlu @tailwind base/components/utilities lagi di v4 */
+/* Mencegah kedip putih saat dark mode aktif */
+.dark body {
+    background-color: #121214;
+    color: #e4e4e7;
+}

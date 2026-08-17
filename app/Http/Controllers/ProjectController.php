@@ -5,21 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        // Menangkap input pencarian dari form
+        $search = $request->input('search');
 
-        // Mengambil semua project milik user yang sedang login
-        $projects = $user->projects()->latest()->get();
+        // Mengambil data project HANYA milik user yang sedang login
+        $projects = Project::where('user_id', auth()->id())
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%");
+            })->get();
 
-        return view('projects.index', compact('projects'));
+        return view('projects.index', compact('projects', 'search'));
     }
 
     /**
@@ -52,14 +56,23 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(Request $request, Project $project)
     {
         // Memastikan user hanya bisa melihat project miliknya sendiri
-        if ($project->user_id !== Auth::id()) {
-            abort(403);
-        }
+        abort_if($project->user_id !== auth()->id(), 403);
 
-        return view('projects.show', compact('project'));
+        // Menangkap kata kunci pencarian tugas
+        $search = $request->input('search');
+
+        // Mengambil daftar tugas milik project ini, lalu di-filter jika ada pencarian
+        $tasks = $project->tasks()
+            ->when($search, function ($query, $search) {
+                // Catatan: Ubah 'name' menjadi 'title' jika nama kolom di database Anda menggunakan 'title'
+                return $query->where('name', 'like', "%{$search}%");
+            })->get();
+
+        // Mengirim data project, tugas yang sudah difilter, dan kata kunci ke view
+        return view('projects.show', compact('project', 'tasks', 'search'));
     }
 
     /**
@@ -105,5 +118,58 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus!');
+    }
+
+    public function exportPdf(Project $project)
+    {
+        abort_if($project->user_id !== auth()->id(), 403);
+
+        $project->load('tasks');
+
+        $pdf = Pdf::loadView('projects.pdf', compact('project'));
+
+        return $pdf->stream('Laporan-Daftar-Tugas-' . str_replace(' ', '-', $project->name) . '.pdf');
+    }
+
+    public function dashboard()
+    {
+        $userId = auth()->id();
+
+        // Mengambil data project milik user yang sedang login beserta task-nya
+        $projects = \App\Models\Project::where('user_id', $userId)->with('tasks')->get();
+
+        // Hitung Statistik
+        $totalProjects = $projects->count();
+        $totalTasks = $projects->sum(fn($p) => $p->tasks->count());
+        $completedTasks = $projects->sum(fn($p) => $p->tasks->where('is_completed', true)->count());
+
+        // Hitung persentase keseluruhan
+        $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+
+        // Hitung tugas terlambat (overdue) dan yang akan datang
+        $overdueTasks = collect();
+        $upcomingTasks = collect();
+
+        foreach ($projects as $project) {
+            foreach ($project->tasks as $task) {
+                if (!$task->is_completed) {
+                    if ($task->due_date && $task->isOverdue()) {
+                        $overdueTasks->push($task);
+                    } else {
+                        $upcomingTasks->push($task);
+                    }
+                }
+            }
+        }
+
+        return view('dashboard', compact(
+            'totalProjects',
+            'totalTasks',
+            'completedTasks',
+            'completionPercentage',
+            'overdueTasks',
+            'upcomingTasks',
+            'projects'
+        ));
     }
 }
