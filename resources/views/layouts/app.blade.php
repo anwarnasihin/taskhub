@@ -20,8 +20,16 @@
         }
     </script>
 
-    {{-- Load Tailwind CSS + Alpine.js via Vite --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- BAGIAN YANG DIEDIT: Mengganti @vite dengan CDN Tailwind + Config + Alpine.js --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class' // Memaksa Tailwind membaca class "dark" dari tombol Alpine.js
+        }
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- AKHIR BAGIAN YANG DIEDIT --}}
+
     @stack('styles')
     <style> [x-cloak] { display: none !important; } </style>
 </head>
