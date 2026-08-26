@@ -1,58 +1,69 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## 🚀 TaskHub - Aplikasi Manajemen Proyek & Tugas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi **TaskHub** adalah sistem manajemen proyek dan tugas berbasis web yang dirancang untuk mempermudah pelacakan pekerjaan. Studi kasus yang diangkat pada aplikasi ini mencakup pengelolaan proyek, daftar tugas, hingga fitur unggah lampiran file yang terintegrasi penuh. Aplikasi ini dibangun menggunakan *framework* Laravel 13, Tailwind CSS, dan Alpine.js untuk mendukung antarmuka yang modern, dinamis, dan responsif.
 
-## About Laravel
+## 📊 Entity Relationship Diagram (ERD)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplikasi ini menggunakan beberapa tabel utama yang saling berelasi untuk mendukung operasi CRUD secara utuh:
+*   **Users**: Menyimpan data autentikasi pengguna.
+*   **Projects**: Menyimpan data proyek utama.
+*   **Tasks**: Menyimpan detail tugas dari masing-masing proyek (berelasi dengan Projects).
+*   **Task Attachments**: Menyimpan riwayat file lampiran tugas (berelasi dengan Tasks).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> *Hapus teks ini dan seret (drag & drop) gambar ERD Anda ke sini*
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 💻 Langkah Instalasi (Localhost)
 
-## Learning Laravel
+Untuk menjalankan dan mengembangkan aplikasi TaskHub ini di komputer lokal, ikuti panduan instalasi berikut:
+1. Lakukan *clone* repositori ini menggunakan perintah `git clone`.
+2. Buka terminal pada folder proyek dan jalankan `composer install` untuk mengunduh seluruh dependensi.
+3. Salin file `.env.example` menjadi `.env` lalu sesuaikan konfigurasi *database* MySQL/MariaDB Anda.
+4. Jalankan `php artisan key:generate` untuk mengamankan sesi aplikasi.
+5. Jalankan `php artisan migrate` untuk merakit seluruh struktur tabel di *database*.
+6. Jalankan `npm install` dan `npm run build` (opsional jika menggunakan Vite).
+7. Jalankan `php artisan serve` untuk menjalankan aplikasi secara lokal melalui *browser*.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📸 Screenshot Fitur & Akses Login
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Berikut adalah dokumentasi visual untuk antarmuka fitur utama aplikasi TaskHub:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**1. Halaman Dashboard & List Data**
+<img width="1886" height="843" alt="image" src="https://github.com/user-attachments/assets/d91eb728-12f8-4393-8073-a004a0ad12f4" />
 
-## Agentic Development
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+**2. Halaman Tambah Data**
+- Tambah Projeck Baru :
+<img width="1476" height="837" alt="image" src="https://github.com/user-attachments/assets/56d435fd-956f-4aac-b078-f491c7f64f25" />
 
-```bash
-composer require laravel/boost --dev
+- Tambah Tugas Baru :
+<img width="1630" height="911" alt="image" src="https://github.com/user-attachments/assets/66926ad4-ca72-4de0-bf59-3574d4f09024" />
 
-php artisan boost:install
-```
+**3. Halaman Edit Data**
+- Edit Project :
+<img width="1471" height="913" alt="image" src="https://github.com/user-attachments/assets/f1bbe8d2-55c5-4c62-94a0-ac979a688c69" />
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+- Edit Tugas :
+<img width="1613" height="913" alt="image" src="https://github.com/user-attachments/assets/884226fc-6b8d-41a4-8153-4d6b6f37bc75" />
 
-## Contributing
+**4. Konfirmasi Hapus Data**
+- Komfirmasi Hapus Project :
+<img width="932" height="606" alt="image" src="https://github.com/user-attachments/assets/c95da46c-bd4f-4630-9bca-2132a4599984" />
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Konfirmasi Hapus Tugas :
+<img width="786" height="487" alt="image" src="https://github.com/user-attachments/assets/6ae1118a-1657-4f5a-a070-cdc42b1c26d1" />
 
-## Code of Conduct
+**5. Upload File**
+<img width="1021" height="730" alt="image" src="https://github.com/user-attachments/assets/06ca318f-2a43-49b2-8ad9-04cebdf27385" />
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**6. Checklist Tugas**
+<img width="1480" height="241" alt="image" src="https://github.com/user-attachments/assets/ae1fe50e-eb9f-4c1b-adbb-02db57de3742" />
 
-## Security Vulnerabilities
+**7. Cetak PDF**
+<img width="1170" height="551" alt="image" src="https://github.com/user-attachments/assets/f4286b1a-4d42-42d2-a003-8c480a0253e7" />
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 🔑 Kredensial Login Penguji
+Aplikasi ini dilengkapi dengan fitur autentikasi. Silakan gunakan akses *dummy* berikut untuk masuk ke dalam dasbor dan menguji fitur:
+*   **Email/Username:** demo/demo@taskhub.com
+*   **Password:** password123!
