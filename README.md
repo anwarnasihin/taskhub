@@ -69,3 +69,6 @@ Aplikasi ini dilengkapi dengan fitur autentikasi. Silakan gunakan akses *dummy* 
 
 *   **Email/Username:** demo/demo@taskhub.com
 *   **Password:** password123!
+
+Dan ini link untuk testing aplikasi Taskhub di server InfinityFree yang sudah saya upload : http://taskhub-anwar.freepage.cc
+Silahkan di coba !
