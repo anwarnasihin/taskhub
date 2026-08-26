@@ -12,6 +12,7 @@
 
     {{-- @yield('title') diisi dari setiap halaman anak --}}
     <title>{{ config('app.name') }} — @yield('title', 'Dashboard')</title>
+    <link rel="icon" type="image/png" href="/favicon.png?v=4">
 
     {{-- Skrip Inline Pencegah Kedip Putih (Flash) Saat Load Halaman --}}
     <script>

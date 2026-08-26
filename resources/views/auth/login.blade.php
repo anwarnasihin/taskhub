@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login TaskHub</title>
+    <link rel="icon" type="image/png" href="/favicon.png?v=4">
 </head>
 <body style="background-color: #F6F8FA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;">
 
@@ -35,9 +36,9 @@
                 <div style="margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <label style="font-size: 14px; font-weight: 500; color: #1F2328;">Password</label>
-                        @if (Route::has('password.request'))
+                        {{-- @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}" style="font-size: 12px; color: #0969DA; text-decoration: none;">Lupa password?</a>
-                        @endif
+                        @endif --}}
                     </div>
                     <input type="password" name="password" required
                            style="width: 100%; padding: 5px 12px; font-size: 14px; line-height: 20px; color: #1F2328; background-color: #ffffff; border: 1px solid #D0D7DE; border-radius: 6px; outline: none; box-sizing: border-box;">

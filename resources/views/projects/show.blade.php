@@ -26,12 +26,69 @@
     </a>
 
     <!-- Tombol Hapus Project -->
-    <form action="{{ route('projects.destroy', $project) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus project ini?');" class="inline">
-        @csrf @method('DELETE')
-        <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition">
-            Hapus Project
-        </button>
-    </form>
+    {{-- Komponen Tombol Hapus & Modal dengan Alpine.js --}}
+<div x-data="{ openDeleteModal: false }" class="inline-block">
+
+    {{-- Tombol Pemicu (Membuka Modal) --}}
+    <button type="button" @click="openDeleteModal = true"
+            class="bg-red-600/10 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white dark:hover:bg-red-500 dark:hover:text-white font-semibold py-2 px-4 rounded-lg text-[13px] tracking-wide transition-colors border border-red-600/20">
+        HAPUS PROJECT
+    </button>
+
+    {{-- Background Overlay (Latar Belakang Gelap) --}}
+    <div x-show="openDeleteModal" style="display: none;"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        {{-- Kotak Modal Utama --}}
+        <div @click.away="openDeleteModal = false"
+             class="bg-white dark:bg-[#18181B] border border-gray-100 dark:border-[#27272A] rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
+            {{-- Ikon Peringatan --}}
+            <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-[#3F201C] rounded-full mb-4">
+                <svg class="w-6 h-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+
+            {{-- Teks Konfirmasi --}}
+            <h3 class="text-lg font-bold text-center text-gray-900 dark:text-white mb-2">Hapus Project?</h3>
+            <p class="text-[13px] text-center text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+                Apakah Anda yakin ingin menghapus project <strong class="text-gray-700 dark:text-gray-200">"{{ $project->name }}"</strong>? Semua tugas dan lampiran di dalamnya akan ikut terhapus permanen. Tindakan ini tidak dapat dibatalkan.
+            </p>
+
+            {{-- Tombol Aksi --}}
+            <div class="flex items-center justify-center gap-3">
+                {{-- Tombol Batal --}}
+                <button type="button" @click="openDeleteModal = false"
+                        class="px-4 py-2 text-[13px] font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-[#27272A] dark:hover:bg-gray-700 rounded-lg transition-colors w-full">
+                    Batal
+                </button>
+
+                {{-- Form Hapus (Asli) --}}
+                <form action="{{ route('projects.destroy', $project->id) }}" method="POST" class="m-0 w-full">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-4 py-2 text-[13px] font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors w-full">
+                        Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('content')
