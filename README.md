@@ -65,5 +65,7 @@ Berikut adalah dokumentasi visual untuk antarmuka fitur utama aplikasi TaskHub:
 
 ### 🔑 Kredensial Login Penguji
 Aplikasi ini dilengkapi dengan fitur autentikasi. Silakan gunakan akses *dummy* berikut untuk masuk ke dalam dasbor dan menguji fitur:
+<img width="552" height="687" alt="image" src="https://github.com/user-attachments/assets/b77126f3-6d99-418f-9630-e45b3e7173ab" />
+
 *   **Email/Username:** demo/demo@taskhub.com
 *   **Password:** password123!
