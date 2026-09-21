@@ -21,48 +21,113 @@
     <!-- 4 Kartu Statistik -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total Project -->
-        <div class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between">
+        <a href="{{ route('projects.index') }}"
+        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+
             <div>
-                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Project</p>
-                <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">{{ $totalProjects ?? 0 }}</h3>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Total Project
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+                    {{ $totalProjects ?? 0 }}
+                </h3>
             </div>
+
             <div class="p-3 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z">
+                    </path>
+                </svg>
             </div>
-        </div>
+
+        </a>
 
         <!-- Total Tugas -->
-        <div class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between">
+        <a href="{{ route('tasks.index') }}"
+        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+
             <div>
-                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Tugas</p>
-                <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">{{ $totalTasks ?? 0 }}</h3>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Total Tugas
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+                    {{ $totalTasks ?? 0 }}
+                </h3>
             </div>
+
             <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2m-6 9l2 2 4-4"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2m-6 9l2 2 4-4">
+                    </path>
+                </svg>
             </div>
-        </div>
+
+        </a>
 
         <!-- Tugas Selesai -->
-        <div class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between">
+        <a href="{{ route('tasks.index', ['filter' => 'completed']) }}"
+        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+
             <div>
-                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Tugas Selesai</p>
-                <h3 class="text-2xl font-extrabold text-green-600 mt-1">{{ $completedTasks ?? 0 }}</h3>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Tugas Selesai
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-green-600 mt-1">
+                    {{ $completedTasks ?? 0 }}
+                </h3>
             </div>
+
             <div class="p-3 bg-green-50 dark:bg-green-950/50 text-green-600 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5 13l4 4L19 7">
+                    </path>
+                </svg>
             </div>
-        </div>
+
+        </a>
 
         <!-- Tugas Terlambat -->
-        <div class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between">
+        <a href="{{ $overdueTasks && $overdueTasks->count() > 0
+            ? route('tasks.index', ['filter' => 'overdue'])
+            : 'javascript:void(0)' }}"
+        @if(!$overdueTasks || $overdueTasks->count() === 0)
+            onclick="showNoOverdueAlert(event)"
+        @endif
+        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+
             <div>
-                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Terlambat</p>
-                <h3 class="text-2xl font-extrabold text-red-600 mt-1">{{ isset($overdueTasks) ? $overdueTasks->count() : 0 }}</h3>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    Terlambat
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-red-600 mt-1">
+                    {{ isset($overdueTasks) ? $overdueTasks->count() : 0 }}
+                </h3>
             </div>
+
             <div class="p-3 bg-red-50 dark:bg-red-950/50 text-red-600 rounded-xl">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                    </path>
+                </svg>
             </div>
-        </div>
+
+        </a>
     </div>
 
     <!-- Grafik Persentase Penyelesaian Keseluruhan -->
@@ -155,3 +220,14 @@
 
 </div>
 @endsection
+
+<script>
+function showNoOverdueAlert(event) {
+    event.preventDefault();
+
+    alert(
+        "🎉 Tidak Ada Tugas Terlambat!\n\n" +
+        "Semua tugas saat ini masih sesuai dengan deadline."
+    );
+}
+</script>

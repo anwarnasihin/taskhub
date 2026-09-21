@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects.tasks', TaskController::class)
          ->except(['index', 'show']);
 
+    // Daftar semua tugas / filter tugas
+    Route::get('/tasks', [TaskController::class, 'index'])
+    ->name('tasks.index');
+
     // Route toggle (Fitur 5 nanti)
     Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggle'])
          ->name('tasks.toggle');

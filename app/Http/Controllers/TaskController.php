@@ -4,15 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Models\{Project, Task};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filter = $request->query('filter', 'all');
+
+        $tasks = Task::with('project')
+            ->where('user_id', Auth::id())
+            ->get();
+
+        switch ($filter) {
+
+            case 'completed':
+
+                $tasks = $tasks->filter(function ($task) {
+                    return $task->is_completed;
+                });
+
+                break;
+
+            case 'overdue':
+
+                $tasks = $tasks->filter(function ($task) {
+                    return !$task->is_completed
+                        && $task->due_date
+                        && $task->isOverdue();
+                });
+
+                break;
+
+            default:
+
+                $filter = 'all';
+
+                break;
+        }
+
+        return view('tasks.index', compact('tasks', 'filter'));
     }
 
     /**
