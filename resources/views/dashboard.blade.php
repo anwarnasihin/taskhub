@@ -74,7 +74,7 @@
 
         <!-- Tugas Selesai -->
         <a href="{{ route('tasks.index', ['filter' => 'completed']) }}"
-        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+            class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
 
             <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
@@ -102,10 +102,10 @@
         <a href="{{ $overdueTasks && $overdueTasks->count() > 0
             ? route('tasks.index', ['filter' => 'overdue'])
             : 'javascript:void(0)' }}"
-        @if(!$overdueTasks || $overdueTasks->count() === 0)
-            onclick="showNoOverdueAlert(event)"
-        @endif
-        class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+            @if(!$overdueTasks || $overdueTasks->count() === 0)
+                @click.prevent="$dispatch('open-overdue-modal')"
+            @endif
+            class="bg-white dark:bg-[#18181B] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#27272A] flex items-center justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer">
 
             <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
@@ -217,17 +217,170 @@
             </div>
         @endif
     </div>
+</div>
+
+{{-- =========================================================
+     MODAL TUGAS TERLAMBAT
+========================================================= --}}
+
+<div
+    x-data="{ showOverdueModal: false }"
+    @open-overdue-modal.window="showOverdueModal = true"
+    @keydown.escape.window="showOverdueModal = false"
+>
+
+    <template x-teleport="body">
+
+        <div
+            x-show="showOverdueModal"
+            x-cloak
+            x-transition.opacity
+            class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+        >
+
+            {{-- Backdrop --}}
+            <div
+                class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                @click="showOverdueModal = false"
+            ></div>
+
+
+            {{-- Modal --}}
+            <div
+                x-show="showOverdueModal"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                @click.stop
+                class="relative w-full max-w-md bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#27272A] overflow-hidden"
+            >
+
+                {{-- HEADER --}}
+                <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-[#27272A]">
+
+                    <div class="flex items-center gap-3">
+
+                        {{-- Icon --}}
+                        <div class="w-11 h-11 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+
+                            <svg
+                                class="w-6 h-6 text-green-500"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                                Tugas Terlambat
+                            </h3>
+
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                Status deadline tugas Anda
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- Tombol X --}}
+                    <button
+                        type="button"
+                        @click="showOverdueModal = false"
+                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-[#27272A] dark:hover:text-white transition"
+                    >
+
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6 6l12 12M6 18L18 6"
+                            />
+                        </svg>
+
+                    </button>
+
+                </div>
+
+
+                {{-- CONTENT --}}
+                <div class="px-6 py-8">
+
+                    <div class="text-center">
+
+                        {{-- Success Icon --}}
+                        <div class="w-16 h-16 mx-auto rounded-full bg-green-50 dark:bg-green-950/30 flex items-center justify-center mb-5">
+
+                            <svg
+                                class="w-8 h-8 text-green-500"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+
+                        </div>
+
+
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white">
+                            Tidak Ada Tugas Terlambat
+                        </h4>
+
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
+                            Semua tugas saat ini masih sesuai dengan deadline.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {{-- FOOTER --}}
+                <div class="px-6 py-4 bg-gray-50 dark:bg-[#202023] border-t border-gray-200 dark:border-[#27272A] flex justify-end">
+
+                    <button
+                        type="button"
+                        @click="showOverdueModal = false"
+                        class="px-5 py-2.5 rounded-xl bg-[#1C1C1E] text-white text-sm font-semibold hover:bg-black dark:bg-white dark:text-[#1C1C1E] dark:hover:bg-gray-200 transition"
+                    >
+                        Tutup
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </template>
 
 </div>
+
 @endsection
-
-<script>
-function showNoOverdueAlert(event) {
-    event.preventDefault();
-
-    alert(
-        "🎉 Tidak Ada Tugas Terlambat!\n\n" +
-        "Semua tugas saat ini masih sesuai dengan deadline."
-    );
-}
-</script>

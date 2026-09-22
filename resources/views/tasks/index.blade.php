@@ -1,4 +1,16 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('page-title')
+    @if($filter === 'completed')
+        Tugas Selesai
+    @elseif($filter === 'overdue')
+        Tugas Terlambat
+    @else
+        Semua Tugas
+    @endif
+@endsection
+
+@section('content')
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,4 +176,4 @@
         </div>
     </div>
 
-</x-app-layout>
+@endsection

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+
 class ProjectController extends Controller
 {
     /**
@@ -133,7 +134,7 @@ class ProjectController extends Controller
 
     public function dashboard()
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         // Mengambil data project milik user yang sedang login beserta task-nya
         $projects = \App\Models\Project::where('user_id', $userId)->with('tasks')->get();

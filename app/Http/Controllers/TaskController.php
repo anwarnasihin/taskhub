@@ -11,31 +11,26 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $filter = $request->query('filter', 'all');
 
-        $tasks = Task::with('project')
-            ->where('user_id', Auth::id())
-            ->get();
+        $query = Task::with('project')
+            ->where('user_id', Auth::id());
 
         switch ($filter) {
 
             case 'completed':
 
-                $tasks = $tasks->filter(function ($task) {
-                    return $task->is_completed;
-                });
+                $query->where('is_completed', true);
 
                 break;
 
             case 'overdue':
 
-                $tasks = $tasks->filter(function ($task) {
-                    return !$task->is_completed
-                        && $task->due_date
-                        && $task->isOverdue();
-                });
+                $query->where('is_completed', false)
+                    ->whereNotNull('due_date')
+                    ->whereDate('due_date', '<', now());
 
                 break;
 
@@ -45,6 +40,8 @@ class TaskController extends Controller
 
                 break;
         }
+
+        $tasks = $query->get();
 
         return view('tasks.index', compact('tasks', 'filter'));
     }
