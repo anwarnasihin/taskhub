@@ -30,7 +30,7 @@ class TaskController extends Controller
 
                 $query->where('is_completed', false)
                     ->whereNotNull('due_date')
-                    ->whereDate('due_date', '<', now());
+                    ->where('due_date', '<', now());
 
                 break;
 
@@ -51,7 +51,7 @@ class TaskController extends Controller
      */
     public function create(Project $project)
     {
-        // Proteksi kepemilikan project[cite: 2]
+        // Proteksi kepemilikan project
         abort_if($project->user_id !== auth()->id(), 403);
 
         return view('tasks.create', compact('project'));
@@ -68,7 +68,7 @@ class TaskController extends Controller
             'title'         => 'required|string|min:3|max:255',
             'description'   => 'nullable|string',
             'priority'      => 'required|in:low,medium,high',
-            'due_date'      => 'nullable|date|after_or_equal:today',
+            'due_date'      => 'nullable|date|after_or_equal:now',
             'attachments'   => 'nullable|array',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         ]);
@@ -122,9 +122,18 @@ class TaskController extends Controller
         // 1. Validasi Input
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
-            'due_date'      => 'nullable|date', // Ini akan memperbarui tanggal, otomatis menghilangkan status terlambat jika tanggalnya masa depan
+            'due_date'      => 'nullable|date',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         ]);
+
+        // Simpan deadline lama sebelum diubah
+        $oldDueDate = $task->due_date?->format('Y-m-d H:i:s');
+
+        // Deadline baru
+        $newDueDate = $validated['due_date'] ?? $oldDueDate;
+
+        // Cek apakah deadline berubah
+        $dueDateChanged = $oldDueDate !== $newDueDate;
 
         // 2. Update Data Dasar
         $task->update([
@@ -132,10 +141,20 @@ class TaskController extends Controller
             'due_date' => $validated['due_date'] ?? $task->due_date,
         ]);
 
-        // 3. Proses Upload File (Menambah file baru)
+        // 3. Jika deadline berubah, reset status reminder
+        if ($dueDateChanged) {
+            $task->update([
+                'reminder_sent_at'          => null,
+                'email_reminder_sent_at'    => null,
+                'whatsapp_reminder_sent_at' => null,
+            ]);
+        }
+
+        // 4. Proses Upload File (Menambah file baru)
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('attachments', 'public');
+
                 $task->attachments()->create([
                     'file_path'     => $path,
                     'original_name' => $file->getClientOriginalName(),

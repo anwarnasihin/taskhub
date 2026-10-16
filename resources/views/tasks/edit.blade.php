@@ -49,8 +49,10 @@
                 {{-- Tanggal Tenggat --}}
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Tenggat Waktu (Tanggal)</label>
-                    <input type="date" name="due_date" value="{{ old('due_date', optional($task->due_date)->format('Y-m-d')) }}"
-                           class="w-full px-4 py-3 bg-white dark:bg-[#202023] border border-gray-300 dark:border-[#27272A] text-gray-900 dark:text-white rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm transition">
+                    <input type="datetime-local"
+                        name="due_date"
+                        value="{{ old('due_date', optional($task->due_date)->format('Y-m-d\TH:i')) }}"
+                        class="w-full px-4 py-3 bg-white dark:bg-[#202023] border border-gray-300 dark:border-[#27272A] text-gray-900 dark:text-white rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm transition">
                 </div>
             </div>
 
@@ -77,3 +79,6 @@
     </div>
 </div>
 @endsection
+
+
+

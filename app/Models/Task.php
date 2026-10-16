@@ -10,13 +10,28 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
-        'project_id', 'user_id', 'title', 'description',
-        'priority', 'due_date', 'is_completed',
+        'project_id',
+        'user_id',
+        'title',
+        'description',
+        'priority',
+        'due_date',
+        'is_completed',
+        'reminder_sent_at',
+        'email_reminder_sent_at',
+        'whatsapp_reminder_sent_at',
+        'email_overdue_reminder_sent_at',
+        'whatsapp_overdue_reminder_sent_at',
     ];
 
     protected $casts = [
-        'due_date'     => 'date',
+        'due_date' => 'datetime',
         'is_completed' => 'boolean',
+        'reminder_sent_at' => 'datetime',
+        'email_reminder_sent_at' => 'datetime',
+        'whatsapp_reminder_sent_at' => 'datetime',
+        'email_overdue_reminder_sent_at' => 'datetime',
+        'whatsapp_overdue_reminder_sent_at' => 'datetime',
     ];
 
     public function project() { return $this->belongsTo(Project::class); }

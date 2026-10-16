@@ -233,7 +233,7 @@
                                    {{ $task->isOverdue()
                                        ? 'text-red-500 font-semibold'
                                        : 'text-gray-400 dark:text-gray-500' }}">
-                                {{ $task->due_date->format('d M Y') }}
+                                {{ $task->due_date->format('d M Y, H:i') }}
                                 @if($task->isOverdue())
                                     <span class="font-bold">— Terlambat!</span>
                                 @endif

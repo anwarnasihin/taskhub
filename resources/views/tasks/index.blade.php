@@ -98,7 +98,7 @@
                                             : 'text-gray-500 dark:text-gray-400' }}">
 
                                         Deadline:
-                                        {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y H:i') }}
 
                                         @if(!$task->is_completed && $task->isOverdue())
                                             — Terlambat
