@@ -54,99 +54,112 @@ class SendTaskDeadlineReminders extends Command
             return self::SUCCESS;
         }
 
+        
         foreach ($tasks as $task) {
-            try {
-                if (!$task->user || !$task->user->email) {
+            if (!$task->user) {
+                $this->warn(
+                    "Task #{$task->id} dilewati karena user tidak ditemukan."
+                );
+                continue;
+            }
+
+            /*
+            * EMAIL REMINDER
+            */
+            if ($task->email_reminder_sent_at === null) {
+                if (!$task->user->email) {
                     $this->warn(
-                        "Task #{$task->id} dilewati karena user/email tidak ditemukan."
-                    );
-                    continue;
-                }
-
-                if ($task->email_reminder_sent_at === null) {
-                    Mail::to($task->user->email)
-                        ->send(new TaskDeadlineReminderMail($task));
-
-                    $task->update([
-                        'email_reminder_sent_at' => now('Asia/Jakarta'),
-                    ]);
-
-                    $this->info(
-                        "Email reminder terkirim untuk Task #{$task->id}: {$task->title}"
+                        "Email reminder Task #{$task->id} dilewati: email user kosong."
                     );
                 } else {
-                    $this->info(
-                        "Email reminder Task #{$task->id} sudah pernah terkirim."
-                    );
-                }
+                    try {
+                        Mail::to($task->user->email)
+                            ->send(new TaskDeadlineReminderMail($task));
 
-                /*
-                * WHATSAPP REMINDER
-                */
-                if (config('services.whatsapp.enabled', false)) {
-
-                    if ($task->whatsapp_reminder_sent_at === null) {
-
-                        if (!$task->user->whatsapp_number) {
-                            $this->warn(
-                                "WhatsApp reminder Task #{$task->id} dilewati karena nomor WhatsApp user belum diisi."
-                            );
-                        } else {
-
-                            $result = $this->whatsapp->sendTemplate(
-                                $task->user->whatsapp_number,
-                                'task_deadline_reminder',
-                                'id',
-                                [
-                                    $task->user->name,
-                                    $task->title,
-                                    $task->project->name,
-                                    $task->due_date
-                                        ->timezone('Asia/Jakarta')
-                                        ->format('d F Y, H:i'),
-                                ]
-                            );
-
-                            if ($result['success']) {
-
-                                $task->update([
-                                    'whatsapp_reminder_sent_at' => now('Asia/Jakarta'),
-                                ]);
-
-                                $this->info(
-                                    "WhatsApp reminder terkirim untuk Task #{$task->id}: {$task->title}"
-                                );
-
-                            } else {
-
-                                $this->error(
-                                    "WhatsApp reminder gagal untuk Task #{$task->id}. " .
-                                    "HTTP {$result['status']} - " .
-                                    json_encode($result['data'])
-                                );
-                            }
-                        }
-
-                    } else {
+                        $task->email_reminder_sent_at = now('Asia/Jakarta');
+                        $task->save();
 
                         $this->info(
-                            "WhatsApp reminder Task #{$task->id} sudah pernah terkirim."
+                            "Email reminder terkirim untuk Task #{$task->id}: {$task->title}"
+                        );
+                    } catch (\Throwable $e) {
+                        $this->error(
+                            "Email reminder Task #{$task->id} gagal: {$e->getMessage()}"
                         );
                     }
+                }
+            } else {
+                $this->info(
+                    "Email reminder Task #{$task->id} sudah pernah terkirim."
+                );
+            }
 
-                } else {
+            /*
+            * WHATSAPP REMINDER
+            */
+            if (!config('services.whatsapp.enabled', false)) {
+                $this->info(
+                    "WhatsApp reminder OFF - Task #{$task->id} dilewati."
+                );
+                continue;
+            }
+
+            if ($task->whatsapp_reminder_sent_at !== null) {
+                $this->info(
+                    "WhatsApp reminder Task #{$task->id} sudah pernah terkirim."
+                );
+                continue;
+            }
+
+            if (!$task->user->whatsapp_number) {
+                $this->warn(
+                    "WhatsApp reminder Task #{$task->id} dilewati: nomor user kosong."
+                );
+                continue;
+            }
+
+            try {
+                $result = $this->whatsapp->sendTemplate(
+                    $task->user->whatsapp_number,
+                    'task_deadline_reminder',
+                    'id',
+                    [
+                        $task->user->name,
+                        $task->title,
+                        $task->project?->name ?? '-',
+                        $task->due_date
+                            ->timezone('Asia/Jakarta')
+                            ->format('d F Y, H:i'),
+                    ]
+                );
+
+                if ($result['success']) {
+                    $task->whatsapp_reminder_sent_at = now('Asia/Jakarta');
+                    $task->save();
 
                     $this->info(
-                        "WhatsApp reminder OFF - Task #{$task->id} dilewati."
+                        "WhatsApp reminder diterima API untuk Task #{$task->id}: {$task->title}"
+                    );
+
+                    if (!empty($result['message_id'])) {
+                        $this->line(
+                            'Message ID: ' . $result['message_id']
+                        );
+                    }
+                } else {
+                    $this->error(
+                        "WhatsApp reminder Task #{$task->id} gagal. " .
+                        "HTTP {$result['status']} - " .
+                        json_encode($result['data'])
                     );
                 }
-
             } catch (\Throwable $e) {
                 $this->error(
-                    "Gagal mengirim reminder Task #{$task->id}: {$e->getMessage()}"
+                    "WhatsApp reminder Task #{$task->id} gagal: {$e->getMessage()}"
                 );
             }
         }
+
 
         return self::SUCCESS;
     }

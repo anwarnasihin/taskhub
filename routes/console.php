@@ -23,9 +23,9 @@ Schedule::command('tasks:send-reminders')
     ->timezone('Asia/Jakarta');
 
 // Sementara dinonaktifkan sampai pengujian overdue selesai.
-// Schedule::command('tasks:send-overdue-reminders')
-//     ->everyMinute()
-//     ->timezone('Asia/Jakarta');
+Schedule::command('tasks:send-overdue-reminders')
+    ->everyMinute()
+    ->timezone('Asia/Jakarta');
 
 
 

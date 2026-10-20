@@ -43,6 +43,13 @@ return [
         'enabled' => env('WHATSAPP_REMINDER_ENABLED', false),
         'webhook_verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
         'app_secret' => env('WHATSAPP_APP_SECRET'),
+
+                'local_url' => env(
+            'WHATSAPP_SERVICE_URL',
+            'http://127.0.0.1:3001'
+        ),
+
+        'local_key' => env('WHATSAPP_SERVICE_KEY'),
     ],
 
 ];

@@ -3,84 +3,121 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
+    /**
+     * Mengirim pesan teks melalui layanan WhatsApp lokal.
+     */
     public function sendText(string $to, string $message): array
     {
-        $version = config('services.whatsapp.api_version');
-        $phoneNumberId = config('services.whatsapp.phone_number_id');
-        $accessToken = config('services.whatsapp.access_token');
-
-        $url = "https://graph.facebook.com/{$version}/{$phoneNumberId}/messages";
-
-        $response = Http::withToken($accessToken)
-            ->post($url, [
-                'messaging_product' => 'whatsapp',
-                'to' => $to,
-                'type' => 'text',
-                'text' => [
-                    'body' => $message,
-                ],
-            ]);
-
-        return [
-            'success' => $response->successful(),
-            'status' => $response->status(),
-            'data' => $response->json(),
-        ];
+        return $this->sendLocalMessage($to, $message);
     }
 
+    /**
+     * Mempertahankan kompatibilitas dengan pemanggil lama.
+     * Template Meta diubah menjadi pesan teks biasa.
+     */
     public function sendTemplate(
         string $to,
         string $templateName,
         string $languageCode,
         array $parameters
     ): array {
-        $version = config('services.whatsapp.api_version');
-        $phoneNumberId = config('services.whatsapp.phone_number_id');
-        $accessToken = config('services.whatsapp.access_token');
+        
+        $heading = match ($templateName) {
+            'task_deadline_reminder' =>
+                '⏰ PENGINGAT DEADLINE TASKHUB',
+            'task_overdue_reminder' =>
+                '⚠️ PENGINGAT TUGAS TERLAMBAT - TASKHUB',
+            default => '📌 PENGINGAT TASKHUB',
+        };
 
-        $url = "https://graph.facebook.com/{$version}/{$phoneNumberId}/messages";
 
-        $bodyParameters = array_map(
-            fn ($value) => [
-                'type' => 'text',
-                'text' => (string) $value,
-            ],
+        $lines = array_map(
+            fn ($value) => (string) $value,
             $parameters
         );
 
-        $response = Http::withToken($accessToken)
-            ->post($url, [
-                'messaging_product' => 'whatsapp',
-                'to' => $to,
-                'type' => 'template',
-                'template' => [
-                    'name' => $templateName,
-                    'language' => [
-                        'code' => $languageCode,
-                    ],
-                    'components' => [
-                        [
-                            'type' => 'body',
-                            'parameters' => $bodyParameters,
-                        ],
-                    ],
+        $message = $heading . "\n\n" . implode("\n", $lines);
+
+        return $this->sendLocalMessage($to, $message);
+    }
+
+    /**
+     * Mengirim pesan ke layanan Node.js Baileys.
+     */
+    private function sendLocalMessage(
+        string $to,
+        string $message
+    ): array {
+        $url = rtrim(
+            (string) config(
+                'services.whatsapp.local_url',
+                'http://127.0.0.1:3001'
+            ),
+            '/'
+        ) . '/send';
+
+        $apiKey = (string) config(
+            'services.whatsapp.local_key',
+            ''
+        );
+
+        if ($apiKey === '') {
+            return [
+                'success' => false,
+                'status' => 0,
+                'data' => [
+                    'error' => 'WHATSAPP_SERVICE_KEY belum dikonfigurasi.',
                 ],
-            ]);
+            ];
+        }
+
+        $phone = preg_replace('/\D+/', '', $to);
+
+        if (!$phone || !preg_match('/^\d{10,15}$/', $phone)) {
+            return [
+                'success' => false,
+                'status' => 422,
+                'data' => [
+                    'error' => 'Format nomor WhatsApp tidak valid.',
+                ],
+            ];
+        }
+
+        try {
+            $response = Http::acceptJson()
+                ->withHeaders([
+                    'x-api-key' => $apiKey,
+                ])
+                ->timeout(20)
+                ->post($url, [
+                    'phone' => $phone,
+                    'message' => $message,
+                ]);
 
             $data = $response->json();
 
             return [
-                'success' => $response->successful(),
+                'success' => $response->successful()
+                    && (bool) data_get($data, 'success', false),
                 'status' => $response->status(),
-                'message_id' => data_get($data, 'messages.0.id'),
-                'message_status' => data_get($data, 'messages.0.message_status'),
                 'data' => $data,
             ];
+        } catch (\Throwable $e) {
+            Log::error('Gagal menghubungi layanan WhatsApp lokal.', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'status' => 0,
+                'data' => [
+                    'error' => 'Layanan WhatsApp lokal tidak dapat dihubungi.',
+                ],
+            ];
+        }
     }
 }
-
-
-
